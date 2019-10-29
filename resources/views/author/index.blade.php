@@ -36,7 +36,9 @@
                  @csrf
                  <button type="submit"  class="btn btn-danger">DELETE</button>
                 </form>
-                
+                @if($author->portret)
+                <img src="{{asset('img/'.$author->portret)}}">
+                @endif
               </li>
               @endforeach
                   </ul>

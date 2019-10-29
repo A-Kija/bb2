@@ -6,6 +6,7 @@ use App\Author;
 use Illuminate\Http\Request;
 use Validator;
 use Intervention\Image\ImageManagerStatic as Image;
+use Str;
 
 class AuthorController extends Controller
 {
@@ -78,6 +79,7 @@ class AuthorController extends Controller
        [
            'author_name' => ['required', 'min:3', 'max:64'],
            'author_surname' => ['required', 'min:3', 'max:64'],
+           'author_portret' => ['sometimes', 'required', 'image:jpeg', 'max:10000'],
        ],
        [
         'author_name.required' => 'autoriau vardas laukelis yra',
@@ -93,7 +95,10 @@ class AuthorController extends Controller
        if ($request->has('author_portret')) {
            $img = Image::make($request->file('author_portret')); //bitu kratinys, be jokios info
            $image = $request->file('author_portret'); //failas ir jo info
-           $fileName = $image->getClientOriginalName();
+           $fileName = $image->getClientOriginalName(); // originalas
+
+           $fileName = Str::random(5).'.jpg';// random sugalvojau
+
            $folder = public_path('img');
 
             $img->resize(300, null, function ($constraint) {
@@ -144,8 +149,38 @@ class AuthorController extends Controller
      */
     public function update(Request $request, Author $author)
     {
+        
+        if ($request->has('author_portret')) {
+
+            if ($author->portret) {
+                unlink(public_path('img/'.$author->portret));
+            }
+
+            $img = Image::make($request->file('author_portret')); //bitu kratinys, be jokios info
+            $image = $request->file('author_portret'); //failas ir jo info
+            $fileName = $image->getClientOriginalName(); // originalas
+ 
+            $fileName = Str::random(5).'.jpg';// random sugalvojau
+ 
+            $folder = public_path('img');
+ 
+             $img->resize(300, null, function ($constraint) {
+                 $constraint->aspectRatio();
+             });
+             $img->circle(100, 50, 50, function ($draw) {
+                 $draw->background('#0000ff');
+             });
+             $img->save($folder.'/'.$fileName, 80, 'jpg');
+         }
+        
         $author->name = $request->author_name;
         $author->surname = $request->author_surname;
+
+        if (isset($fileName)){ // jeigu nededame tai cia ir neiname
+            $author->portret = $fileName;
+        }
+        //else pasilieka senas
+        
         $author->save();
         return redirect()->route('author.index');
     }
@@ -162,7 +197,22 @@ class AuthorController extends Controller
 
             return redirect()->back()->with('info_message', 'Trinti negalima, nes turi knygų.');
         }
+        if ($author->portret) {
+            unlink(public_path('img/'.$author->portret));
+        }
         $author->delete();
         return redirect()->route('author.index')->with('success_message', 'Viskas - nėra.');;
+    }
+
+    public function destroyPhoto(Author $author)
+    {
+
+        if ($author->portret) {
+            unlink(public_path('img/'.$author->portret));
+            $author->portret = '';
+            $author->save();
+        }
+
+        return redirect()->route('author.edit',[$author])->with('success_message', 'Viskas -FOTKES  nebėra.');;
     }
 }

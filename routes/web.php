@@ -26,6 +26,7 @@ Route::group(['prefix' => 'authors'], function(){
     Route::get('edit/{author}', 'AuthorController@edit')->name('author.edit');
     Route::post('update/{author}', 'AuthorController@update')->name('author.update');
     Route::post('delete/{author}', 'AuthorController@destroy')->name('author.destroy');
+    Route::post('delete-photo/{author}', 'AuthorController@destroyPhoto')->name('author.destroy.photo');
     Route::get('show/{author}', 'AuthorController@show')->name('author.show');
 });
 
