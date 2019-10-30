@@ -25,13 +25,18 @@
               </select>
               <button type="submit">rusiuot</button>
               </form>
+              <br>
+              <form action="{{route('author.index')}}" method="GET">
+                <input type="text" name="name_search">
+                <button type="submit">ieskoti</button>
+              </form>
               </div>
                <div class="card-body">
                   <ul class="list-group">
                 @foreach ($authors as $author)
                 <li class="list-group-item">
                 <a href="{{route('author.edit',[$author])}}">{{$author->name}} {{$author->surname}}</a>
-                
+                <a href="{{route('author.show',[$author])}}"> Show </a>
                 <form method="POST" action="{{route('author.destroy', [$author])}}">
                  @csrf
                  <button type="submit"  class="btn btn-danger">DELETE</button>

@@ -10,6 +10,11 @@ use Str;
 
 class AuthorController extends Controller
 {
+    
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,6 +48,10 @@ class AuthorController extends Controller
             }
             elseif ($request->sortby == 'na') {
                 $authors = Author::all()->sortBy('name');
+            }
+            elseif (isset($request->name_search)) {
+                // $authors = Author::where('name', $request->name_search)->get()->sortBy('name');
+                $authors = Author::where('name', 'like', '%' . $request->name_search . '%')->orderBy('name')->get();
             }
             else {
                 $authors = Author::all();// nerusiuoja
@@ -126,7 +135,7 @@ class AuthorController extends Controller
      */
     public function show(Author $author)
     {
-        //
+        return view('author.show', ['author' => $author]);
     }
 
     /**
