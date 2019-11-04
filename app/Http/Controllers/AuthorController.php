@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Validator;
 use Intervention\Image\ImageManagerStatic as Image;
 use Str;
+use PDF;
 
 class AuthorController extends Controller
 {
@@ -223,5 +224,11 @@ class AuthorController extends Controller
         }
 
         return redirect()->route('author.edit',[$author])->with('success_message', 'Viskas -FOTKES  nebėra.');;
+    }
+
+    public function pdf(Author $author)
+    {
+        $pdf = PDF::loadView('author.pdf', ['author' => $author]);
+        return $pdf->download($author->surname.'.pdf');
     }
 }

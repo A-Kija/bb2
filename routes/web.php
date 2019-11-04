@@ -28,6 +28,7 @@ Route::group(['prefix' => 'authors'], function(){
     Route::post('delete/{author}', 'AuthorController@destroy')->name('author.destroy');
     Route::post('delete-photo/{author}', 'AuthorController@destroyPhoto')->name('author.destroy.photo');
     Route::get('show/{author}', 'AuthorController@show')->name('author.show');
+    Route::get('pdf/{author}', 'AuthorController@pdf')->name('author.pdf');
 });
 
 Route::group(['prefix' => 'books'], function(){

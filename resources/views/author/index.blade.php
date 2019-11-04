@@ -37,6 +37,7 @@
                 <li class="list-group-item">
                 <a href="{{route('author.edit',[$author])}}">{{$author->name}} {{$author->surname}}</a>
                 <a href="{{route('author.show',[$author])}}"> Show </a>
+                <a href="{{route('author.pdf',[$author])}}"> PDF </a>
                 <form method="POST" action="{{route('author.destroy', [$author])}}">
                  @csrf
                  <button type="submit"  class="btn btn-danger">DELETE</button>
