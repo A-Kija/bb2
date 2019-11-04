@@ -40,5 +40,49 @@ Route::group(['prefix' => 'books'], function(){
     Route::post('/delete/{book}', 'BookController@destroy')->name('book.destroy');
     Route::get('show/{book}', 'BookController@show')->name('book.show');
  });
+
+ Route::group(['prefix' => 'admin'], function(){
+
+    Route::group(['prefix' => 'manufacture'], function(){
+        Route::get('', 'ManufactureController@index')->name('manufacture.index');
+        Route::get('create', 'ManufactureController@create')->name('manufacture.create');
+        Route::post('store', 'ManufactureController@store')->name('manufacture.store');
+        Route::get('edit/{manufacture}', 'ManufactureController@edit')->name('manufacture.edit');
+        Route::post('update/{manufacture}', 'ManufactureController@update')->name('manufacture.update');
+        Route::post('delete/{manufacture}', 'ManufactureController@destroy')->name('manufacture.destroy');
+        Route::get('show/{manufacture}', 'ManufactureController@show')->name('manufacture.show');
+    });
+
+    Route::group(['prefix' => 'tag'], function(){
+        Route::get('', 'TagController@index')->name('tag.index');
+        Route::get('create', 'TagController@create')->name('tag.create');
+        Route::post('store', 'TagController@store')->name('tag.store');
+        Route::get('edit/{tag}', 'TagController@edit')->name('tag.edit');
+        Route::post('update/{tag}', 'TagController@update')->name('tag.update');
+        Route::post('delete/{tag}', 'TagController@destroy')->name('tag.destroy');
+        Route::get('show/{tag}', 'TagController@show')->name('tag.show');
+    });
+
+    Route::group(['prefix' => 'product-group'], function(){
+        Route::get('', 'ProductGroupController@index')->name('product_group.index');
+        Route::get('create', 'ProductGroupController@create')->name('product_group.create');
+        Route::post('store', 'ProductGroupController@store')->name('product_group.store');
+        Route::get('edit/{product_group}', 'ProductGroupController@edit')->name('product_group.edit');
+        Route::post('update/{product_group}', 'ProductGroupController@update')->name('product_group.update');
+        Route::post('delete/{product_group}', 'ProductGroupController@destroy')->name('product_group.destroy');
+        Route::get('show/{product_group}', 'ProductGroupController@show')->name('product_group.show');
+    });
+
+    Route::group(['prefix' => 'product'], function(){
+        Route::get('', 'ProductController@index')->name('product.index');
+        Route::get('create', 'ProductController@create')->name('product.create');
+        Route::post('store', 'ProductController@store')->name('product.store');
+        Route::get('edit/{product}', 'ProductController@edit')->name('product.edit');
+        Route::post('update/{product}', 'ProductController@update')->name('product.update');
+        Route::post('delete/{product}', 'ProductController@destroy')->name('product.destroy');
+        Route::get('show/{product}', 'ProductController@show')->name('product.show');
+    });
+
+});
  
  
