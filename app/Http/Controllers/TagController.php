@@ -61,3 +61,7 @@ class TagController extends Controller
     }
 
 }
+
+//Mygtukas paspaustas pirkime ir transporte- emailas sugeneruojamas su duomenim
+//Paziureti nepavykosio pirkimo loga ir info is tenai islupti
+
