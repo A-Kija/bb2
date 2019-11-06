@@ -49,12 +49,13 @@
                             
                             <ul class="list-group list-group-flush">
                                 @foreach ($tags as $tag)
-                                @if($tag->type != ($t ?? 0))
-                                <p class="font-weight-bold">{{$t=$tag->type}}</p>
+                                @if($tag->type_name != ($t ?? ''))
+                                <br>
+                                <p class="font-weight-bold">{{$t = $tag->type_name}}</p>
                                 @endif
                                 <li class="list-group-item">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="check_{{$tag->id}}">
+                                    <input type="checkbox" class="custom-control-input" name="tag[]" value="{{$tag->id}}" id="check_{{$tag->id}}">
                                     <label class="custom-control-label" for="check_{{$tag->id}}">{{$tag->name}}</label>
                                 </div>
                                 </li>

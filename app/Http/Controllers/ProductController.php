@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use App\ProductGroup;
+use App\ProductTag;
 use App\Tag;
 use Illuminate\Http\Request;
 use Validator;
@@ -41,14 +42,24 @@ class ProductController extends Controller
     public function create()
     {
         $product_groups = ProductGroup::all();// nerusiuoja
-        $tags = Tag::all()->sortBy('type');
+        $_tags = Tag::all()->sortBy('type');
+        $tags = collect();// tuscias lagaminas
+        foreach ($_tags as $tag) {
+            $type = Tag::TYPES[$tag->type];
+            $tag->type_name = $type;
+            $tags->add($tag);
+        }
+
+
+        
 
 
 
         return view('product.create',
             [
                 'product_groups' => $product_groups,
-                'tags' => $tags
+                'tags' => $tags,
+               
             ]
         );
     }
@@ -61,7 +72,10 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-       if ($request->has('photo')) {
+       
+    //    dd($request->all());
+       
+        if ($request->has('photo')) {
            $img = Image::make($request->file('photo')); //bitu kratinys, be jokios info
            $image = $request->file('photo'); //failas ir jo info
            // $fileName = $image->getClientOriginalName(); // originalas
@@ -80,6 +94,32 @@ class ProductController extends Controller
         $product->product_group_id = $request->product_group_id;
         $product->about = $request->about ?? '';
         $product->save();
+
+        //tagu lentele
+
+        $product_tags = ProductTag::where('product_id', $product->id)->get();
+        
+
+
+        $product_tags_array =  $product_tags->pluck('tag_id') ?? [];
+
+        // pridejimas
+        foreach ($request->tag ?? [] as $post_tag) {
+            if (!in_array($post_tag, $product_tags_array->all())) {
+                $pt = new ProductTag;
+                $pt->tag_id = $post_tag;
+                $pt->product_id = $product->id;
+                $pt->save();
+            }
+        }
+
+        //trinimas
+        foreach ($product_tags as $product_tag) {
+            if (!in_array($product_tag->tag_id, $request->tag ?? [])) {
+                $product_tag->delete(); // trinam
+            }
+        }
+
         return redirect()->route('product.index')->with('success_message', 'Der product '.$product->name.' was added.');
     }
 
@@ -102,7 +142,29 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('product.edit', ['product' => $product]);
+    $product_tags = ProductTag::where('product_id', $product->id)->get();
+    $product_tags_array =  $product_tags->pluck('tag_id')->all() ?? [];
+        
+        $product_groups = ProductGroup::all();// nerusiuoja
+        $_tags = Tag::all()->sortBy('type');
+        $tags = collect();// tuscias lagaminas
+        foreach ($_tags as $tag) {
+            $type = Tag::TYPES[$tag->type];
+            $tag->type_name = $type;
+            $tag->checked = (in_array($tag->id, $product_tags_array)) ? 1 : 0;
+            $tags->add($tag);
+        }
+        
+        
+        
+        
+        return view('product.edit', 
+        [
+            'product' => $product,
+            'product_groups' => $product_groups,
+            'tags' => $tags,
+
+        ]);
     }
 
     /**
@@ -115,38 +177,52 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         
+           
         if ($request->has('photo')) {
-
-            if ($product->portret) {
-                unlink(public_path('img/'.$product->portret));
-            }
-
             $img = Image::make($request->file('photo')); //bitu kratinys, be jokios info
             $image = $request->file('photo'); //failas ir jo info
-            $fileName = $image->getClientOriginalName(); // originalas
- 
+            // $fileName = $image->getClientOriginalName(); // originalas
             $fileName = Str::random(5).'.jpg';// random sugalvojau
- 
             $folder = public_path('img');
- 
-             $img->resize(300, null, function ($constraint) {
+             $img->resize(500, null, function ($constraint) {
                  $constraint->aspectRatio();
-             });
-             $img->circle(100, 50, 50, function ($draw) {
-                 $draw->background('#0000ff');
              });
              $img->save($folder.'/'.$fileName, 80, 'jpg');
          }
-        
-        $product->name = $request->product_name;
-        $product->surname = $request->product_surname;
 
-        if (isset($fileName)){ // jeigu nededame tai cia ir neiname
-            $product->portret = $fileName;
-        }
-        //else pasilieka senas
-        
-        $product->save();
+         $product->name = $request->name;
+         $product->price = $request->price;
+         $product->discount = $request->discount ?? $request->price;
+         $product->photo = $fileName ?? '';
+         $product->product_group_id = $request->product_group_id;
+         $product->about = $request->about ?? '';
+         $product->save();
+ 
+         //tagu lentele
+ 
+         $product_tags = ProductTag::where('product_id', $product->id)->get();
+         
+ 
+ 
+         $product_tags_array =  $product_tags->pluck('tag_id') ?? [];
+ 
+         // pridejimas
+         foreach ($request->tag ?? [] as $post_tag) {
+             if (!in_array($post_tag, $product_tags_array->all())) {
+                 $pt = new ProductTag;
+                 $pt->tag_id = $post_tag;
+                 $pt->product_id = $product->id;
+                 $pt->save();
+             }
+         }
+ 
+         //trinimas
+         foreach ($product_tags as $product_tag) {
+             if (!in_array($product_tag->tag_id, $request->tag ?? [])) {
+                 $product_tag->delete(); // trinam
+             }
+         }
+ 
         return redirect()->route('product.index');
     }
 
