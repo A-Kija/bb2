@@ -11,9 +11,10 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
+Route::get('', 'FrontController@index')->name('index');
+Route::get('pica/{product_group}', 'FrontController@group')->name('pizza');
 
 Auth::routes(['register'=>false]);
 
@@ -41,7 +42,9 @@ Route::group(['prefix' => 'books'], function(){
     Route::get('show/{book}', 'BookController@show')->name('book.show');
  });
 
- Route::group(['prefix' => 'admin'], function(){
+
+
+ Route::group(['prefix' => 'admin','middleware' => 'auth'], function(){
 
     Route::group(['prefix' => 'manufacture'], function(){
         Route::get('', 'ManufactureController@index')->name('manufacture.index');
