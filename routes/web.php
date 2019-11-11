@@ -20,6 +20,10 @@ Auth::routes(['register'=>false]);
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::get('distance', 'DistanceController@enter')->name('distance.enter');
+Route::post('distance-count', 'DistanceController@count')->name('distance.count');
+Route::get('result', 'DistanceController@result')->name('distance.result');
+
 Route::group(['prefix' => 'authors'], function(){
     Route::get('', 'AuthorController@index')->name('author.index');
     Route::get('create', 'AuthorController@create')->name('author.create');
